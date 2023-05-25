@@ -1,0 +1,79 @@
+﻿@model List<Ejericios.Models.Pokemon>
+@{ ViewBag.Title = "Pokemons"; }
+
+<h2>Filtros</h2>
+
+@using (Html.BeginForm("Index", "PokeAPI", FormMethod.Get))
+{
+<div class="form-inline">
+    <label for="nameFilter">Nombre:</label>
+    <input type="text" class="form-control" id="nameFilter" name="nameFilter" value="@Request[" nameFilter"]" />
+</div>
+                <br />
+                                <div class="form-inline">
+                                    <label for="type">Tipo: </label>
+                                    <select class="form-control" id="typeFilter" name="typeFilter">
+                                        <option value="">-- Selecciona un tipo --</option> @foreach (var type in ViewBag.Types as List<Ejericios.Models.Type>)
+                                        {
+                        <option value="@type.Name" @(Request["typeFilter"] == type.Name ? "selected" : "" )>@type.Name</option>}
+                                    </select>
+                                </div>
+                                                <br />
+                                                                <button type="button" class="btn btn-success" id="exportBtn">Exportar a Excel</button>
+                                                                                <button type="submit" class="btn btn-primary">Filtrar</button>
+}
+@if (TempData["CsvDownloaded"] != null)
+{
+<script>
+        var confirmEmail = confirm("¿Desea enviar la consulta filtrada por correo electrónico?");
+        if (confirmEmail) {
+            window.location.href = "@Url.Action("SendEmail", "Pokemon")";
+        }
+</script>}
+<h2>Pokemons</h2>
+<div class="table-responsive">
+    <br />
+    <table id="pokemonTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pokemon in Model)
+            {
+<tr>
+    <td>@pokemon.Name</td>
+    <td>@string.Join(", ", pokemon.Types)</td>
+</tr>
+}
+        </tbody>
+    </table>
+
+</div>
+
+@section scripts {
+    @* Tabla *@
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            $('#pokemonTable').DataTable({
+                "pageLength": 10
+            });
+        });
+
+    @* Exportar *@
+        $('#exportBtn').click(function () {
+    var nameFilter = $('#nameFilter').val();
+    var typeFilter = $('#typeFilter').val();
+    var url = '@Url.Action("ExportToCsv", "PokeAPI")?nameFilter=' + nameFilter + '&typeFilter=' + typeFilter;
+    window.location.href = url;
+        });
+
+
+    </script>
+}
+

@@ -1,0 +1,50 @@
+﻿using Ejericios.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace Ejericios.Services
+{
+    public class PokeApiService
+    {
+        private readonly HttpClient _httpClient;
+
+        public PokeApiService()
+        {
+            _httpClient = new HttpClient { BaseAddress = new Uri("https://pokeapi.co/api/v2/") };
+        }
+
+        public async Task<List<Pokemon>> GetPokemonsAsync(string nameFilter = null, string speciesFilter = null)
+        {
+            var response = await _httpClient.GetAsync("pokemon?limit=100000&offset=0");
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic jsonResponse = JsonConvert.DeserializeObject(content);
+
+            var pokemons = new List<Pokemon>();
+
+            foreach (var result in jsonResponse.results)
+            {
+                var pokemon = new Pokemon
+                {
+                    Id = result.id ?? 0, //0 Valor default
+                    Name = result.name,
+                    Species = result.species.name
+                };
+
+                if ((string.IsNullOrEmpty(nameFilter) || pokemon.Name.Contains(nameFilter)) &&
+                    (string.IsNullOrEmpty(speciesFilter) || pokemon.Species.Contains(speciesFilter)))
+                {
+                    pokemons.Add(pokemon);
+                }
+            }
+
+            return pokemons;
+        }
+    }
+}

@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Ejericios.Models.Pokemon>
+
+@{ ViewBag.Title = "Pokemons"; }
+
+<h2>Pokemons</h2>
+
+<form method="get" action="@Url.Action("Index", "Home")">
+    <label for="nameFilter">Nombre:</label>
+    <input type="text" name="nameFilter" value="@Request["nameFilter"]" />
+    <label for="speciesFilter">Especie:</label>
+    <input type="text" name="speciesFilter" value="@Request["speciesFilter"]" />
+    <button type="submit">Filtrar</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Especie</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pokemon in Model)
+        {
+<tr>
+    <td>@pokemon.Id</td>
+    <td>@pokemon.Name</td>
+    <td>@pokemon.Species</td>
+</tr>}
+    </tbody>
+</table>

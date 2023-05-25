@@ -1,0 +1,40 @@
+﻿@model Ejericios.Models.Juego
+@{
+    ViewBag.Title = "Piedra, papel y tijera";
+}
+
+<div class="jumbotron">
+    <h1>Ganador de PPT</h1>
+    <p class="lead">El ganador del piedra papel o tijera es:  @Model.Resultado .</p>
+
+    <form action="@Url.Action("Index", "Home")" method="post">
+        <input type="submit" value="Jugar de nuevo" class="btn btn-primary btn-lg" />
+    </form>
+
+</div>
+
+<h2>Jugadas</h2>
+
+<div class="table-responsive">
+    <br />
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Jugador 1</th>
+                <th>Jugador 2</th>
+                <th style="width:150px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var jugada in Model.Jugadas)
+            {
+                <tr>
+                    <td>@jugada.Item1</td>
+                    <td>@jugada.Item2</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
